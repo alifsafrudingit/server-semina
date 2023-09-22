@@ -5,7 +5,7 @@ const { checkingImage } = require('./images');
 const getAllTalents = async (req) => {
     const { keyword } = req.query;
 
-    let condition = {};
+    let condition = { organizer: req.user.organizer };
 
     if (keyword) {
         condition = { ...condition, name: { $regex: keyword, $options: 'i'} };
@@ -26,11 +26,11 @@ const createTalents = async (req) => {
 
     await checkingImage(image);
 
-    const check = await Talents.findOne({ name });
+    const check = await Talents.findOne({ name, organizer: req.user.organizer });
 
     if (check) throw new BadRequestError(`Pembicara ${name} sudah terdaftar`);
 
-    const result = await Talents.create({ name, image, role });
+    const result = await Talents.create({ name, image, role, organizer: req.user.organizer });
 
     return result;
 };
@@ -38,7 +38,7 @@ const createTalents = async (req) => {
 const getOneTalents = async (req) => {
     const { id } = req.params;
 
-    const result = await Talents.findOne({ _id: id })
+    const result = await Talents.findOne({ _id: id, organizer: req.user.organizer })
         .populate({
             path: 'image',
             select: '_id name',
@@ -58,6 +58,7 @@ const updateTalents = async (req) => {
 
     const check = await Talents.findOne({
         name,
+        organizer: req.user.organizer,
         _id: { $ne: id }, 
     });
 
@@ -65,7 +66,7 @@ const updateTalents = async (req) => {
 
     const result = await Talents.findOneAndUpdate(
         { _id: id },
-        { name, image, role },
+        { name, image, role, organizer: req.user.organizer },
         { new: true, runValidators: true }
     );
 
@@ -77,7 +78,7 @@ const updateTalents = async (req) => {
 const deleteTalents = async (req) => {
     const { id } = req.params;
 
-    const result = await Talents.findOneAndRemove({ _id: id });
+    const result = await Talents.findOneAndRemove({ _id: id, organizer: req.user.organizer });
 
     if (!result) throw new NotFoundError(`Tidak ada pembicara dengan id ; ${id}`);
 

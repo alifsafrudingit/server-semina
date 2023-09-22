@@ -72,6 +72,11 @@ const EventSchema = new mongoose.Schema({
         ref: 'Talent',
         rename: true,
     },
+    organizer: {
+        type: mongoose.Types.ObjectId,
+        ref: 'Organizer',
+        required: true,
+    },
 },{ timestamps : true }
 );
 
