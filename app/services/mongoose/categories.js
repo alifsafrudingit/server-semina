@@ -27,6 +27,9 @@ const getOneCategories = async (req) => {
 
     const result = await Categories.findOne({ _id: id, organizer: req.user.organizer });
 
+    console.log('result')
+    console.log(result)
+    
     if (!result) throw new NotFoundError(`Tidak ada Kategori dengan id : ${id}`);
 
     return result;
