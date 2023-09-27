@@ -6,7 +6,7 @@ const Payments = require('../../api/v1/payments/model');
 const { BadRequestError, NotFoundError, UnauthorizedError } = require('../../errors');
 const { createJWT, createTokenParticipant } = require('../../utils');
 
-const { otpMail } = require('../mail');
+const { otpMail, invoiceMail } = require('../mail');
 
 const signupParticipant = async (req) => {
   const { firstName, lastName, email, password, role } = req.body;
@@ -126,6 +126,8 @@ const getAllOrders = async (req) => {
 const checkoutOrder = async (req) => {
   const { event, personalDetail, payment, tickets  } = req.body;
   
+  const { email } = req.participant;
+  
   const checkingEvent = await Events.findOne({ _id: event });
   
   if (!checkingEvent) throw new NotFoundError('Tidak ada event dengan id : ' + event);
@@ -134,7 +136,7 @@ const checkoutOrder = async (req) => {
   
   if (!checkingPayment) throw new NotFoundError('Tidak ada pembayaran dengan id : ' + payment);
   
-  let totalPay, totalOrderTicket = 0;
+  let totalPay = 0, totalOrderTicket = 0;
   await tickets.forEach((tic) => {
     checkingEvent.tickets.forEach((ticket) => {
       if (tic.ticketCategories.type === ticket.type) {
@@ -179,6 +181,7 @@ const checkoutOrder = async (req) => {
   });
   
   await result.save();
+  await invoiceMail(email, result);
   return result;
 };
 

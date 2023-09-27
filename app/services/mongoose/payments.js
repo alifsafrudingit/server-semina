@@ -17,10 +17,11 @@ const getAllPayments = async (req) => {
 
 const createPayment = async (req) => {
   const { type, image } = req.body;
+  const { organizer } = req.user.organizer;
   
   await checkingImage(image);
   
-  const check = await Payments.findOne({ type, organizer: req.user.organizer });
+  const check = await Payments.findOne({ type, organizer });
   
   if (check) throw new BadRequestError('Tipe pembayaran duplikat');
   
@@ -40,7 +41,7 @@ const getOnePayment = async (req) => {
       
   const result = await Payments.findOne({
     _id: id,
-    organizer: req.user.organizer,
+    organizer: req.user.organizer
   })
     .populate({
       path: 'image',
@@ -81,13 +82,10 @@ const updatePayment = async (req) => {
 const deletePayment = async (req) => {
   const { id } = req.params;
   
-  const result = await Payments.findOne({
+  const result = await Payments.findOneAndRemove({
     _id: id,
     organizer: req.user.organizer
   });
-  
-  console.log('id')
-  console.log(id)
   
   if (!result)  throw new NotFoundError(`Tidak ada pembayaran dengan id : ${id}`);
   
