@@ -13,8 +13,4 @@ const create = async (req, res, next) => {
     }
 };
 
-const index = async (req, res, next) => {
-    
-}
-
 module.exports = { create }

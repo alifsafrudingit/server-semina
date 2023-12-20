@@ -1,10 +1,12 @@
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = {
-  urlDb : process.env.URL_MONGODB_DEV,
-  jwtExpiration: '24h',
-  jwtSecret: 'jwtSecret',
+  urlDb: process.env.URL_MONGODB_DEV,
+  jwtExpiration: "24h",
+  jwtSecret: "jwtSecret",
   gmail: process.env.GMAIL,
   password: process.env.PASSWORD,
+  jwtRefreshTokenExpiration: "24h",
+  jwtRefreshTokenSecret: "jwtRefreshTokenSecret",
 };
